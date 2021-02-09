@@ -26,7 +26,7 @@ if __name__ == '__main__':
         axis_names=axis_names,
         recurrent_activation='tanh',
         lang='ja',
-        vs=100000,
+        vs=200000,
     )
 
     vectors = np.concatenate([vector_df.values, ingredient_vectors])
@@ -44,10 +44,10 @@ if __name__ == '__main__':
         early_stopping=True
     )
 
-    print(fd2v.most_similar(['寿司']))
-    print(fd2v.most_similar(positive=['寿司', 'アメリカ'], negative=['日本']))
-    print(fd2v.most_similar(positive=['寿司', '中国'], negative=['日本']))
+    print(fd2v.most_similar(['カレー']))
+    print(fd2v.most_similar(positive=['カレー', 'アメリカ'], negative=['日本']))
+    print(fd2v.most_similar(positive=['カレー', '中国'], negative=['日本']))
 
-    fd2v.model.save('examples/h5_objects/recipe_ingredient2vec_model.h5')
-    fd2v.kv.save('examples/pkl_objects/recipe_ingredient2vec_kv.pkl')
-    fd2v.preprocessor.save('examples/pkl_objects/recipe_ingredient2vec_preprocessor.pkl')   
+    fd2v.model.save('examples/h5_objects/recipe_ingredient2vec_model2.h5')
+    fd2v.kv.save('examples/pkl_objects/recipe_ingredient2vec_kv2.pkl')
+    fd2v.preprocessor.save('examples/pkl_objects/recipe_ingredient2vec_preprocessor2.pkl')   
