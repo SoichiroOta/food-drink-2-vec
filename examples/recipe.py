@@ -5,18 +5,23 @@ os.sys.path.insert(0, parentdir)
 
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler, Normalizer
+import numpy as np
 
 from food_drink_2_vec import FoodDrink2Vec
 
 
 if __name__ == '__main__':
     recipe_data = json.load(open('examples/data/recipe2vec.json'))
-    all_ingredients = json.load(open('examples/data/all_ingredients.json'))
-    df = pd.DataFrame(recipe_data).sort_index(axis=1).drop(all_ingredients, axis=1)
+    all_tags = sorted(json.load(open('examples/data/tag.json')))
+    all_tag_names = [tag.replace('#', '') for tag in all_tags]
+    df = pd.DataFrame(recipe_data).sort_index(axis=1)
 
-    vocab = list(df['concept'])
-    vector_df = df.drop(['concept'], axis=1).fillna(0.0)
+    vocab = sorted(list(df['concept'])) + all_tag_names
+    vector_df = df[all_tags].fillna(0.0)
     axis_names = list(vector_df.columns)
+
+    tag_vectors = np.eye(len(axis_names))
+    
     fd2v = FoodDrink2Vec(
         vocab=vocab,
         axis_names=axis_names,
@@ -25,9 +30,11 @@ if __name__ == '__main__':
         vs=200000,
     )
 
+    vectors = np.concatenate([vector_df.values, tag_vectors])
+
     scaler = MinMaxScaler((-1, 1))
-    scaler.fit(vector_df.values)
-    scaled_vectors = scaler.transform(vector_df.values)
+    scaler.fit(vectors)
+    scaled_vectors = scaler.transform(vectors)
 
     transformer = Normalizer().fit(scaled_vectors)
     unit_vectors = transformer.transform(scaled_vectors)
