@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     fd2v.train(
         vectors=unit_vectors,
-        batch_size=4,
+        batch_size=2,
         early_stopping=True
     )
 
