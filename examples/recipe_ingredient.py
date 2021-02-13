@@ -14,12 +14,14 @@ if __name__ == '__main__':
     recipe_data = json.load(open('examples/data/recipe2vec.json'))
     all_ingredients = json.load(open('examples/data/all_ingredients.json'))
     df = pd.DataFrame(recipe_data).sort_index(axis=1) #.drop(all_ingredients, axis=1)
+    tag_df = pd.DataFrame(json.load(open('examples/data/tag2vec.json'))).sort_index(axis=1)
 
-    vocab = list(df['concept']) + all_ingredients
+    vocab = list(df['concept']) + all_ingredients + list(tag_df['name'].str.replace('#', ''))
     vector_df = df[all_ingredients].fillna(0.0)
     axis_names = list(vector_df.columns)
 
     ingredient_vectors = np.eye(len(axis_names))
+    tag_vectors = tag_df.drop('name', axis=1).fillna(0.0).values
 
     fd2v = FoodDrink2Vec(
         vocab=vocab,
@@ -29,7 +31,9 @@ if __name__ == '__main__':
         vs=200000,
     )
 
-    vectors = np.concatenate([vector_df.values, ingredient_vectors])
+    vectors = np.concatenate([
+        vector_df.values, ingredient_vectors, tag_vectors
+    ])
 
     scaler = MinMaxScaler((-1, 1))
     scaler.fit(vectors)
